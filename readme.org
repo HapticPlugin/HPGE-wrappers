@@ -1,0 +1,253 @@
+#+title: HPGE: A ~CHAI3D~-based Haptic Plugin for Game Engines
+#+author: Gabriel Baud-Bovy, Nicolò Balzarotti
+#+date: 2018-07-03 Tue
+#+setupfile: ./theme/theme-readtheorg-local.setup
+
+* Licensing
+
+The source code contained in this repository, unless otherwise stated, is released under the terms of the BSD-3 Clause license, as defined in the file [[file:LICENSE.txt]] and as available [[https://opensource.org/licenses/BSD-3-Clause][here]] (on date <2019-02-15 Fri>). The repository has been originally made available to the public on https://github.com/HapticPlugin/HPGE-wrappers
+
+Binary data (shared libraries) are currently released under a proprietary license. Ask us to have more details. This library is statically linked to the CHAI3D Library, licensed under the terms of the BSD 3 Clause license (Copyright (c) 2003-2016, CHAI3D. (www.chai3d.org)), available [[http://www.chai3d.org/download/license][here]].
+
+This documentation file is released under the terms of the Creative Commons License CC BY-SA 4.0.
+
+* Installation
+
+To use the library with Unity, you need to clone the repository in the Assets folder of the Unity project
+
+#+BEGIN_SRC bash
+cd ~/UnityProject/Assets
+git clone git@github.com:HapticPlugin/HPGE-wrappers.git HapticPlugin
+#+END_SRC
+
+This should create a ~HapticPlugin~ folder in Assets with the following sub-folders:
+
+  - ~HPGE/~: contains the dll including a light-weight version ~CHAI3D~
+  - ~csharp/~: contains all C# scripts
+  - ~csharp/Unity3D/~ : contain all  C# scripts for Unity3D integration
+
+To be used with the Omni device, put ~hdPhantom64.dll~ in the project's root folder.
+
+* Usage with Unity
+
+1. Create a Sphere GameObject to represent the haptic device
+2. Drag-and-drop the ~HapticTool.cs~ script from the Assets on the Sphere
+    - Select haptic device ID
+         - click Scan button to display connected haptic device IDs in Unity console
+    - Tool radius (default 0.5)
+         - The tool radius is the radius of the proxy in ~CHAI3D~ Finger Proxy algorithm. It is convenient to use a sphere in Unity that has the same dimension as the tool radius in ~CHAI3D~. When the /Use sphere radius/ box is checked, the scale parameter of the Sphere transform will automatically adjust the tool radius. If the box is not checked, it is possible to set both independently.
+    - Workspace size (default 10) (can't be changed for now)
+        - Scaling parameter between Unity world and ~CHAI3D~ workspace. Default value makes Unity world unit corresponds to 1 cm approximately.
+    - Logging options
+        - A suffix with a number is added to the log file basename. At the moment, the suffix number is automatically incremented when the game stops.
+        - Sampling rate can be slowed down by increasing downsampling factor. For now, the actual sampling rate depends on the thread running the haptic loop. A timestamp is saved with each sample.
+  - Debug
+        - verbosity; provide additional info on console
+        - tick: enable counter indicating how many times object positions have been updated in the log file
+  - Tool shadow (to be documented later)
+3. Create GameObject with haptic properties.
+    -  Create a GameObject in Unity.
+    -  Drag-and-drop one of the following scripts from the Assets to endow the Unity GameObject with haptic properties:
+        - ~HapticMesh.cs~ script: use ~CHAI3D~ /cMesh/ class and /Finger-Proxy algorithm/ to compute the contact force. It is appropriate for objects with complex shapes and/or thin objects but it cannot render all haptic effects.
+        - ~HapticShape.cs~ script: use ~CHAI3D~ objects derived from /cPotentialField/ class and /Penalty method/ to compute contact force. For these objects, it is possible to disactivate the surface and render haptic effects inside the volume.
+        - See [[http://chai3d.org/download/doc/html/chapter17-haptics.html][CHAI3D Haptic Rendering]] for more info on the difference between the two force rendering algorithms.
+4. Specify haptic material
+  - It is necessary to associate a haptic material with each haptic object to specify haptic effects (e.g., stiffness, damping, etc.).
+  - Select Assets/Create/Haptic Material in Unity menu to create a new haptic material, or drag-and-drop one of the existing materials.
+  - Haptic materials are automatically saved in Assets and can be reused with different game objects. As with other
+    assets, it is recommended to put them in some sub-folder.
+  - See [[http://chai3d.org/download/doc/html/chapter15-material.html][CHAI3D Materials]] for more info.
+5. Run the game
+
+* Demos
+
+** Simple Project -- Getting Started
+
+This is a simple tutorial that will guide you through the development of a simple Unity3D project with haptics support enabled.
+
+*** Creating the Unity Project
+
+Create a new Unity Project.
+
+#+attr_html: :width 100px
+[[file:figures/screenshot.1.jpg]]
+
+We'll call it =SimpleHapticProject=.
+
+#+attr_html: :width 200px
+#+caption: Project name
+[[file:figures/screenshot.2.jpg]]
+
+*** Adding the Haptic Library
+
+**** Installing git
+Git is required to get the haptic plugin. You can download it from [[https://git-scm.com/][their website]].
+
+**** Cloning the repository
+After the installation process completes, you'll be able to enter a directory in the file manager and opening =git bash= there (by right-clicking). Do this in the =SimpleHapticProject/Assets= folder.
+
+#+attr_html: 200px
+#+caption: Open Git Bash
+[[file:figures/screenshot.3.jpg]]
+
+#+BEGIN_SRC bash
+git clone git@github.com:HapticPlugin/HPGE-wrappers.git HapticPlugin
+#+END_SRC
+
+This will create a new folder called =HapticPlugin=.
+
+**** Add the device library
+
+Depending on the haptic device you are using, you might need to copy the haptic device library to the main project folder.
+
+#+attr_html: 200px
+#+caption: Add Device DLL
+[[file:figures/screenshot.4.jpg]]
+
+For the SensAble Phantom Omni, this library is the =hdPhantom64.dll=.
+
+*** Creating the GameObjects
+
+**** Adding the tool
+
+In order to receive force feedback, you need to connect the device to a Sphere GameObject.
+
+***** Create the Sphere
+Toolbar: GameObject →3D Object → Sphere
+
+#+attr_html: 200px
+#+caption: New Shpere
+[[file:figures/screenshot.5.jpg]]
+
+***** Attach the HapticTool.cs script
+
+To let the library know which object to use, you have to attach the script to the Sphere GameObject (by drag-and-dropping the script on it).
+
+#+attr_html: 200px
+#+caption: HapticTool.cs
+[[file:figures/screenshot.6.jpg]]
+
+***** Check that the library is working
+
+If the device is connected and the library is working, by clicking on the sphere and then on the =Scan= button you should be able to see in the console your haptic device. You have to set the device number in the =Device Id= field on the inspector. This value defaults to 0 (the first real haptic device found).
+
+#+attr_html: 200px
+#+caption: Scan
+[[file:figures/screenshot.7.jpg]]
+
+#+attr_html: 200px
+#+caption: Found devices
+[[file:figures/screenshot.8.jpg]]
+
+#+attr_html: 200px
+#+caption: Set Device Id
+[[file:figures/screenshot.9.jpg]]
+
+***** Starting the Game
+
+If everything is setup correctly, after starting the game the sphere should move following the haptic device.
+
+#+attr_html: 200px
+#+caption: Game Running
+[[file:figures/screenshot.10.jpg]]
+
+If this is the case, you can stop the game and continue following this tutorial.
+
+**** Adding a Shape to touch
+
+The only supported shapes (for version v1.0.0) are the Cube and the Sphere.
+
+***** Create the Cube
+
+You can add it just like you added the first (tool) sphere. Set the Scale to 3 (on all the 3 axis).
+
+***** Attach the HapticShape.cs
+
+To render it haptically, you have to attach the =HapticShape.cs= script.
+
+***** Create an Haptic Material
+
+On the Inspector, try setting the Verbosity (under Debug Settings) to the maximum (3). By pressing the "Play" button you should see an error reporting that there's no material attached. This is because the haptic library needs to know the effects to render on the object.
+
+#+attr_html: 200px
+#+caption: New Haptic Material Asset
+[[file:figures/screenshot.12.jpg]]
+
+To create an Haptic Material, go to the Assets folder and create the subfolder =Materials=. Enter the folder, then Create → Haptic Material. Give it a name (like VibratingMagnet).
+
+***** Set the properties
+
+We want this cube to have a magnet effect, and to vibrate when we are inside of it. To do this you have to:
+
+#+attr_html: 200px
+#+caption: Example Material
+[[file:figures/screenshot.15.jpg]]
+
+- [ ] Do not render the surface: else the tool movement will be constrained on the object's surface
+- [ ] Increase the Magnetic Force (try with 0.36)
+- [ ] Increase the Magnetic Distance (try with 8.5)
+- [ ] Increase the Vibration Frequency (try with 5)
+- [ ] Increase the Vibration Amplitude (try with 1.7)
+
+***** Add the material to the Cube
+
+On the inspector, click the material and select the =VibratingMagnet= you just created.
+
+#+attr_html: 200px
+#+caption: Set Object Haptic Material
+[[file:figures/screenshot.13.jpg]]
+
+#+attr_html: 200px
+#+caption: Select created Material
+[[file:figures/screenshot.14.jpg]]
+
+***** Run the Game
+
+You can change the haptic properties while the game is running. If you have an high Verbosity, you should see the changes printed in the Console.
+
+**** Adding a Mesh to touch
+
+The simplest way to add a Mesh is by adding a 3D Unity GameObject, but you can also add custom 3D objects. You can try this with the ~teapot.obj~ in this repo (~Data/teapot.obj~).
+
+***** Add an empty GameObject
+
+"Create Empty". Name it "Teapot". On the inspector:
+
+#+attr_html: 200px
+#+caption: Empty Object
+[[file:figures/screenshot.16.jpg]]
+
+- [ ] Add the MeshFilter and select a 3D object to render.
+- [ ] Add the MeshRenderer. The object (teapot) should appear. Select the right material for it
+- [ ] Add the HapticMesh. Select a desired Haptic Material to render
+
+
+***** Run!
+
+If you don't feel the object, try reducing the stiffness or disabling the "Wait for small forces" option on the haptic tool (set Wait For Forces to "No").
+
+**** Using the tool rotation to control objects
+
+There's an extra script called =ToolShadow.cs= that allows you to use tool/proxy information on other objects. This is different from reading the Tool Position (i.e. copying the sphere transform) because data are obtained from the device (and you can read the device position _and_ the proxy position simultaneously).
+
+It's enough to drop the ToolShadow script to any object and deciding in the inspector what information to use.
+
+*** Result
+This is a screenshot of the resulting demo.
+
+#+attr_html: 200px
+#+caption: The demo running
+[[file:figures/screenshot.17.jpg]]
+
+This demo is available for download [[https://share.rbcs.iit.it/public.php?service=files&t=f83557c4300597849dd81075077cf130][here]].
+
+* Notes
+
+- Refer to [[http://chai3d.org/download/doc/html/index.html][~CHAI3D~ Documentation]] for more information on ~CHAI3D~ but note that OpenGL references in the ~CHAI3D~ Documentation are not relevant because all visual rendering is done by Unity. HPGE libary is based on a version of ~CHAI3D~ that was stripped down from all OpenGL references.
+- HPGE libary contains C# scripts to facilitate the integration with Unity 3D but it can also be used with other Game Engines. The core of the library (dll) is a C wrapper around ~CHAI3D~ that exposes the main functions of ~CHAI3D~. The library also contains a C# wrapper around the C API in addition of C# scripts for Unity3D integration.
+- Unless one wants to do physical simulation in Unity, it is not necessary to add a RigidBody and/or Collider component to the GameObject. ~CHAI3D~ will detect collisions between the tool and the objects and render the force appropriately.
+- It is possible to move the position and orientation of the objects in Unity. The position and orientation in ~CHAI3D~ are automatically updated.
+- It is possible to change most material parameters on-line, while the game is running.
+- The current version of the library works best for scenarios where the tool interacts with static or relatively slowly moving objects. The current version does not realistically simulate interaction force in scenarios involving physical simulation.
+- To implement custom haptic effects, it is possible to define a hook function to compute a force that is added to the force computed by ~CHAI3D~ (demo in preparation). The hook function must be fast as it is called from the haptic loop (>1kHz).
+

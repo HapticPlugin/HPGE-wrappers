@@ -1,0 +1,5 @@
+The =HapticNativePlugin.cs= script does not depend on Unity3D in any
+way. You can use it in any c# application.
+
+The =Unity3D= folder contains wrappers around the =HapticNativePlugin= so
+that it's easier to use it inside the Unity3D game engine.
