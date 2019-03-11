@@ -3,6 +3,9 @@
 #+date: 2018-07-03 Tue
 #+setupfile: ./theme/theme-readtheorg-local.setup
 
+* Support
+
+If you have an account here on github.com, please ask for support by opening an issue and explaining your problem. That way we'll help others too.
 * Licensing
 
 The source code contained in this repository, unless otherwise stated, is released under the terms of the BSD-3 Clause license, as defined in the file [[file:LICENSE.txt]] and as available [[https://opensource.org/licenses/BSD-3-Clause][here]] (on date <2019-02-15 Fri>). The repository has been originally made available to the public on https://github.com/HapticPlugin/HPGE-wrappers
