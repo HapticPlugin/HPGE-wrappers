@@ -37,6 +37,7 @@
 using System.Runtime.InteropServices;
 using System;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 static public class HapticNativePlugin
 {
@@ -112,9 +113,11 @@ static public class HapticNativePlugin
     [DllImport("HPGE")]
     public static extern int is_running();
 
+    public delegate void CallbackDelegate(IntPtr position, IntPtr velocity, IntPtr force);
+
     // TODO: not implemented (the C# code) yet
-    //[DllImport("HPGE")]
-    //public extern static void set_hook(int proxy, CallbackDelegate hook);
+    [DllImport("HPGE")]
+    public extern static void set_hook(int proxy, IntPtr hook);
     [DllImport("HPGE")] // This in theory is working
     public extern static int remove_hook();
 
@@ -256,21 +259,42 @@ static public class HapticNativePlugin
 
     // ----- HERE there is a pure-C# wrapper -------
     const int StringBufferSize = 150;
-    // FIME: this is not working!
-    //static public CallbackDelegate hook;
-    //// https://stackoverflow.com/questions/43226928/how-to-pass-function-pointer-from-c-sharp-to-a-c-dll
-    //public delegate void CallbackDelegate(double[] position, double[] velocity, [In, Out] double[] force);
-    //public static void exampleHook(double [] position, double [] velocity, [In,Out] double [] force)
-    //{
-    //    force[0] = -position[0] * 10;
-    //    force[1] = -position[1] * 10;
-    //    force[2] = -position[2] * 10;
-    //}
 
-    //public static void setHook(System.Action<double[],double[],double[]> f) {
-    //    hook = new CallbackDelegate(f); // save to prevent gc
-    //    set_hook(0, hook);
-    //}
+    // https://stackoverflow.com/questions/43226928/how-to-pass-function-pointer-from-c-sharp-to-a-c-dll
+    public static void GravityHook(IntPtr positionPtr, IntPtr velocityPtr, IntPtr forcePtr)
+    {
+        double[] ManagedPosition = new double[3];
+        Marshal.Copy(positionPtr, ManagedPosition, 0, 3);
+
+        double[] ManagedVelocity = new double[3];
+        Marshal.Copy(velocityPtr, ManagedVelocity, 0, 3);
+
+        double[] OutForce = new double[3];
+        OutForce[0] = 0.0;
+        OutForce[1] = 0.0;
+        OutForce[2] = -1.5;
+        Marshal.Copy(OutForce, 0, forcePtr, OutForce.Length);
+    }
+
+    public static void CenterHook(IntPtr positionPtr, IntPtr velocityPtr, IntPtr forcePtr)
+    {
+        double[] ManagedPosition = new double[3];
+        Marshal.Copy(positionPtr, ManagedPosition, 0, 3);
+
+        double[] ManagedVelocity = new double[3];
+        Marshal.Copy(velocityPtr, ManagedVelocity, 0, 3);
+        double [] center = { 0, 0, 0 };
+        double[] OutForce = new double[3];
+        OutForce[0] = center[0] - ManagedPosition[0];
+        OutForce[1] = center[1] - ManagedPosition[1];
+        OutForce[2] = center[2] - ManagedPosition[2];
+        Marshal.Copy(OutForce, 0, forcePtr, OutForce.Length);
+    }
+    private static CallbackDelegate hook;
+    public static void SetHook(Action<IntPtr, IntPtr, IntPtr> new_hook) {
+       hook = new CallbackDelegate(new_hook);
+       set_hook(1, Marshal.GetFunctionPointerForDelegate(hook));
+    }
 
     public static Version GetVersionInfo() {
 	int major, minor, patch;

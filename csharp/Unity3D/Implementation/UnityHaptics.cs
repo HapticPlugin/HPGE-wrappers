@@ -36,6 +36,7 @@
 
 using UnityEngine;
 using System.Linq; // Contains
+using System.Runtime.InteropServices;
 
 // Helper functions to use the HapticNativePlugin easier form Unity3D.
 // This must be the only cs script (except for HapticObject and
@@ -350,5 +351,43 @@ static public class UnityHaptics {
     public static bool DeviceMatchesProxy()
     {
 	return GetToolProxyPosition() == GetToolPosition();
+    }
+
+    /// <summary>
+    /// This function takes as its only parameter (Hook) another function, and add it as an hook on each haptic loop.
+    /// The 'Hook' parameter must take exactly 2 arguments, the actual position and the actual velocity,
+    /// both as UNITY Vector3, and must return the force as a Vector3.
+    ///  public float GravityForceIntensity = 1.5f;
+    /// A simple example: public Vector3 MyGravity(Vector3 pos, Vector3 vel) {  return new Vector3(0.0f, 0.0f, -GravityForceIntensity); }
+    ///
+    /// You can change GravityForceIntensity and the rendered force will automatically update :)
+    /// </summary>
+    /// <param name="Hook"></param>
+    public static void SetHook(System.Func<Vector3, Vector3, Vector3> Hook)
+    {
+        System.Action<System.IntPtr, System.IntPtr, System.IntPtr> real_hook = (p,v,f) => {
+            // Prepare data
+            double[] ManagedPosition = new double[3];
+            Marshal.Copy(p, ManagedPosition, 0, 3);
+
+            double[] ManagedVelocity = new double[3];
+            Marshal.Copy(v, ManagedVelocity, 0, 3);
+
+            var pos = new Vector3((float)ManagedPosition[0], (float)ManagedPosition[1], (float)ManagedPosition[2]);
+            var vel = new Vector3((float)ManagedVelocity[0], (float)ManagedVelocity[1], (float)ManagedVelocity[2]);
+
+            // Actual invocation
+            Vector3 force = Hook(pos, vel);
+
+            // Store output
+            double[] o = new double[3];
+            o[1] = force.x;
+            o[2] = force.y;
+            o[0] = -force.z;
+
+            Marshal.Copy(o, 0, f, o.Length);
+        };
+
+        HapticNativePlugin.SetHook(real_hook);
     }
 }
