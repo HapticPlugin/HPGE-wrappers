@@ -311,7 +311,6 @@ static public class UnityHaptics {
     }
     public static int SetObjectRotationEuler(int ObjectId, Quaternion rotation)
     {
-
 	double[] angle = { rotation.eulerAngles.x, rotation.eulerAngles.y, rotation.eulerAngles.z };
 
 	return HapticNativePlugin.set_object_rotation_euler(ObjectId, angle);
