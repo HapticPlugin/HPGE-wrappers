@@ -34,6 +34,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+// Class defining all the Haptic Properties an object can have
+// It's useful in order to detect for changes in the unity UI
 [System.Serializable]
 public class HapticProperties
 {
