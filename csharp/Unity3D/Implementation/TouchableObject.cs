@@ -52,7 +52,7 @@ public abstract class TouchableObject : Touchable {
     private Texture2D GetMeshTexture()
     {
 	Texture2D t = null;
-	Material[] materials = GetComponent<MeshRenderer>().materials;
+	Material[] materials = GetComponent<Renderer>().sharedMaterials;
 	foreach (Material m in materials)
 	{
 	    if (m.mainTexture != null)

@@ -38,6 +38,7 @@ using System.Runtime.InteropServices;
 using System;
 using System.Text;
 using System.Runtime.CompilerServices;
+using UnityEngine;
 
 static public class HapticNativePlugin
 {
@@ -348,18 +349,22 @@ static public class HapticNativePlugin
     }
     public static bool StopLoggingAndSave(string filename)
     {
-	byte[] data = Encoding.Default.GetBytes(filename);
+	byte[] data = Encoding.ASCII.GetBytes(filename);
 	byte[] zdata = new byte[data.Length + 1];
 	data.CopyTo(zdata, 0);
-	return stop_logging_and_save(data) == 0;
+        zdata[data.Length] = (byte)0;
+
+        return stop_logging_and_save(zdata) == 0;
     }
 
     public static void Annotate(string note)
     {
-	byte[] data = Encoding.Default.GetBytes(note);
+	byte[] data = Encoding.ASCII.GetBytes(note);
 	byte[] zdata = new byte[data.Length + 1];
 	data.CopyTo(zdata, 0);
-	log_annotate(data);
+        zdata[data.Length] = (byte)0;
+
+        log_annotate(zdata);
     }
 
 
