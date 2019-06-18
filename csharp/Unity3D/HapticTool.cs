@@ -217,7 +217,7 @@ public class HapticTool : MonoBehaviour {
 	    //// Warn if attached to something else (maybe they just want to get the input position)
 	    if (GetComponent<MeshFilter>().name != "Sphere"
 		&& Verbosity > 0) {
-		Debug.LogWarning("This script is not attached to a sphere" +
+		Debug.LogWarning("This script is not attached to a sphere " +
 		    "but you are trying to use the sphere radius. You should" +
 		    "instead set the radius manually");
 	    }
@@ -312,6 +312,7 @@ public class HapticTool : MonoBehaviour {
     // Update is called once per frame
     private void Update()
     {
+        //Debug.Log(UnityHaptics.GetToolVelocity());
 	LoopNumber += 1;
 	if (LoopNumber % 100 == 0)
 	{
