@@ -33,6 +33,8 @@ To be used with the Omni device, put ~hdPhantom64.dll~ in the project's root fol
 
 * Usage with Unity
 
+Note: since commit bde7b63, the library is working also with unity under GNU/linux.
+
 1. Create a Sphere GameObject to represent the haptic device
 2. Drag-and-drop the ~HapticTool.cs~ script from the Assets on the Sphere
     - Select haptic device ID
