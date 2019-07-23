@@ -78,6 +78,11 @@ public abstract class TouchableObject : Touchable {
 	}
     }
 
+    public bool UpdateMaterial(HapticMaterial hm) {
+	material = hm;
+	return UpdateMaterial();
+    }
+
     public bool UpdateMaterial() {
 	if (material == null)
 	{
