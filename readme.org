@@ -35,8 +35,8 @@ To be used with the Omni device, put ~hdPhantom64.dll~ in the project's root fol
 This program depends on a DLL/so file called HPGE.dll/libHPGE.so and located
 under [[file:HPGE/x86_64/]].
 
-As of <2023-10-17 mar>, the source code for the library has been released and
-it's available in its own repository [[https://github.com/HapticPlugin/HPGE-wrappers][here]]
+As of <2023-10-17 Tue>, the source code for the library has been released and
+it's available in its own repository [[https://github.com/HapticPlugin/chai3d-with-HPGE][here]]
 
 * Usage with Unity
 
