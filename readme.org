@@ -31,6 +31,13 @@ This should create a ~HapticPlugin~ folder in Assets with the following sub-fold
 
 To be used with the Omni device, put ~hdPhantom64.dll~ in the project's root folder.
 
+* C Library
+This program depends on a DLL/so file called HPGE.dll/libHPGE.so and located
+under [[file:HPGE/x86_64/]].
+
+As of <2023-10-17 mar>, the source code for the library has been released and
+it's available in its own repository [[https://github.com/HapticPlugin/HPGE-wrappers][here]]
+
 * Usage with Unity
 
 Note: since commit bde7b63, the library is working also with unity under GNU/linux.
