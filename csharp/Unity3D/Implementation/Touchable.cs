@@ -5,7 +5,7 @@
 // Copyright (c) 2017-2019,
 // Istituto Italiano di Tecnologia (IIT), All rights reserved.
 
-// (iit.it, contact: gabriel.baud-bovy <at> iit.it)
+// (iit.it, contact: gbaudbovy <at> gmail.com)
 
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
